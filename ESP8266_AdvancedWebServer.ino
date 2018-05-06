@@ -43,8 +43,8 @@ int counter = 1;
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
-const char *ssid = "kll-wlan_2.4G";
-const char *password = "WELOVEKOH-SAMUI";
+const char *ssid = "YOUR_SSID";
+const char *password = "YOUR_PASSWORD";
 
 #define useFIXIP      // or disable with //
 #if defined useFIXIP
