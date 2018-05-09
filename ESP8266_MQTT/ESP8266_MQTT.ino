@@ -1,5 +1,5 @@
 // KLL test MQTT on ESP8266 OLED
-// rev with OLED ( buit this time in a separate TAB )
+// rev with OLED ( but this time in a separate TAB )
 // build in AKN on remote commands
 
 // this example for 
