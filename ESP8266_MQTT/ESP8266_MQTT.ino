@@ -1,6 +1,14 @@
 // KLL test MQTT on ESP8266 OLED
-// rev with OLED ( but this time in a separate TAB )
-// build in AKN on remote commands
+// rev with OLED ( buit this time in a separate TAB )
+// + build in AKN on remote commands
+/* noticed following problem at boot
+pi@RPI3_MQTT:~/projects/py3_mqtt $ MQTTshow
+pcu213/out PCU booted
+pcu213/out 1
+pcu213/out 0
+pcu213/out PCU booted
+ */
+// + + make a noisy sinus "analog" signal and send it to "sensor application"
 
 // this example for 
 // pushbutton on GPIO0 ( change state )
@@ -33,8 +41,8 @@ https://www.esp8266.com/viewtopic.php?f=29&t=8746&sid=c67335f0ddfa2991b7d11b8a6f
 #include <EEPROM.h>
 
 
-const char* ssid = "YOUR SSID";
-const char* password = "YOUR password";
+const char* ssid = "kll-wlan_2.4G";
+const char* password = "WELOVEKOH-SAMUI";
 #define useFIXIP      // or disable with //
 #if defined useFIXIP
 IPAddress STAip(192,168,1,213);
@@ -64,7 +72,24 @@ String mqttcom6 = "6";
 // KLL try new device "pcu"+ IP and ?channel? naming instead of "Sonoff1"
 const char* outTopic = "pcu213/out";
 const char* inTopic = "pcu213/in";
+const char* sensorTopic = "pcu213/sensor/out";
+// KLL try learn how to use Client info like:  https://mosquitto.org/man/mosquitto-conf-5.html
+// mosquitto.conf
+// clientid_prefixes prefix
+// connection_messages [ true
+// allow_anonymous [ true | false ]
+// user <username>   // password_file
+// mosquitto_pub [[-h hostname] [-i client_id] [-I client id prefix][-q message QoS][ [-u username] [-P password] ]
+// https://mosquitto.org/man/mosquitto_pub-1.html
+const char* mqttCl_Name = "kll_engineering";  // use where ?
+const char* mqttCl_Id_prefix   = "kll";       // if set in mosquitto.conf works like a mini password? pubsubclient can use?
+const char* mqttCl_Id   = "kll/pcu213";       // used in client.connect(mqttCl_Id)
+const char* mqttUsr   = "default";       // used in client.connect(mqttCl_Id,mqttUsr,mqttPwd)
+const char* mqttPwd   = "password";
 
+// -i mqttCl_Id -I mqttCl_Id_prefix
+
+// local hardware
 int relay_pin = 12;
 int button_pin = 0;
 bool relayState = LOW;
@@ -146,10 +171,11 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client")) {
-      Serial.println("connected");
+//    if (client.connect("ESP8266Client")) {   // now use client ID, user , password
+    if (client.connect(mqttCl_Id,mqttUsr,mqttPwd)) {
+      Serial.print("connected as: "); Serial.print(mqttCl_Id);Serial.print(" usr: "); Serial.print(mqttUsr); Serial.println(" and pwd ");
       // Once connected, publish an announcement...
-      client.publish(outTopic, "PCU booted");
+      client.publish(outTopic, "pcu213 reconnected");
       // ... and resubscribe
       client.subscribe(inTopic);
       connectinfo3 = "MQTT connected";
@@ -179,10 +205,10 @@ void extButton() {
      digitalWrite(relay_pin,relayState);
      EEPROM.write(0, relayState);    // Write state to EEPROM
      if (relayState == 1){
-      client.publish(outTopic, "1");
+      client.publish(outTopic, "1 by extButton fell");
      }
      else if (relayState == 0){
-      client.publish(outTopic, "0");
+      client.publish(outTopic, "0 by extButton fell");
      }
    }
 }
@@ -218,7 +244,6 @@ void loop() {
   }
   client.loop();
   extButton();
+  make_signal();
 }
-
-
 
