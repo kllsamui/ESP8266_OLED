@@ -1,4 +1,5 @@
 //  https://www.esp8266.com/viewtopic.php?f=29&t=8746&sid=c67335f0ddfa2991b7d11b8a6f1d96cb#
+// KLL keep in for ref / future work
 /*
 MQTT DHT22, when "temperature, c" is sent it returns the temperature in
 celcius

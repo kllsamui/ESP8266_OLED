@@ -8,10 +8,16 @@ pcu213/out 1
 pcu213/out 0
 pcu213/out PCU booted
  */
+/* and LED (relayState) LOW 
+ but sinus not calculated??
+ */
+
 // + + make a noisy sinus "analog" signal and send it to "sensor application"
+// + + make a filter on the noisy sinus
+// + + send by MQTT f_val,f_fil,f_led ( 3 float vals )
 
 // this example for 
-// pushbutton on GPIO0 ( change state )
+// pushbutton on GPIO0 ( change LED state )
 // output relay LED on GPIO12
 // my board not have a LED there connected so i just leave it as it is
 /*
@@ -41,8 +47,8 @@ https://www.esp8266.com/viewtopic.php?f=29&t=8746&sid=c67335f0ddfa2991b7d11b8a6f
 #include <EEPROM.h>
 
 
-const char* ssid = "YOUR SSID";
-const char* password = "YOUR PASSWORD;
+const char* ssid = "kll-wlan_2.4G";
+const char* password = "WELOVEKOH-SAMUI";
 #define useFIXIP      // or disable with //
 #if defined useFIXIP
 IPAddress STAip(192,168,1,213);
@@ -81,18 +87,22 @@ const char* sensorTopic = "pcu213/sensor/out";
 // user <username>   // password_file
 // mosquitto_pub [[-h hostname] [-i client_id] [-I client id prefix][-q message QoS][ [-u username] [-P password] ]
 // https://mosquitto.org/man/mosquitto_pub-1.html
-const char* mqttCl_Name = "kll_engineering";  // use where ?
-const char* mqttCl_Id_prefix   = "kll";       // if set in mosquitto.conf works like a mini password? pubsubclient can use?
-const char* mqttCl_Id   = "kll/pcu213";       // used in client.connect(mqttCl_Id)
-const char* mqttUsr   = "default";       // used in client.connect(mqttCl_Id,mqttUsr,mqttPwd)
+//const char* mqttCl_Name = "kll_engineering";  // use where ?
+//const char* mqttCl_Id_prefix   = "kll";       // if set in mosquitto.conf works like a mini password? pubsubclient can use?
+const char* mqttCl_Id   = "kll/pcu213";         // used in client.connect(mqttCl_Id)
+const char* mqttUsr   = "default";              // used in client.connect(mqttCl_Id,mqttUsr,mqttPwd)
 const char* mqttPwd   = "password";
 
 // -i mqttCl_Id -I mqttCl_Id_prefix
 
-// local hardware
+// local hardware                   // KLL arduio 12 //GPIO12 //D6 ?NEED TEST
 int relay_pin = 12;
+
+// KLL for my ESP8266 OLED board its the "FLASH" button // the "RST" button doing a RESET
+// but ?? arduino 0 // GPIO0 //D3
+// or     arduino 16// GPIO16//D0 // WAKE 
 int button_pin = 0;
-bool relayState = LOW;
+boolean relayState = LOW;
 
 // Instantiate a Bounce object :
 Bounce debouncer = Bounce();
@@ -205,10 +215,10 @@ void extButton() {
      digitalWrite(relay_pin,relayState);
      EEPROM.write(0, relayState);    // Write state to EEPROM
      if (relayState == 1){
-      client.publish(outTopic, "1 by extButton fell");
+      client.publish(outTopic, "1 by [FLASH]Button");
      }
      else if (relayState == 0){
-      client.publish(outTopic, "0 by extButton fell");
+      client.publish(outTopic, "0 by [FLASH]Button");
      }
    }
 }
