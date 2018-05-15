@@ -47,8 +47,8 @@ https://www.esp8266.com/viewtopic.php?f=29&t=8746&sid=c67335f0ddfa2991b7d11b8a6f
 #include <EEPROM.h>
 
 
-const char* ssid = "kll-wlan_2.4G";
-const char* password = "WELOVEKOH-SAMUI";
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR PW";
 #define useFIXIP      // or disable with //
 #if defined useFIXIP
 IPAddress STAip(192,168,1,213);
